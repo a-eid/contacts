@@ -3,14 +3,10 @@ import ios_essentials
 
 class Home: UITableViewController {
   let nCell = "nCell"
-  let names = [
-    ["one", "two", "three"],
-    ["four", "five", "six", "what"],
-    ["seven", "eight", "nine", "ten", "tweleve"]
-  ]
-  
-  let headerTitles = [
-    "first", "second", "third"
+  var sections: [Section] = [
+    Section(title: "First", isExpanded: true, names: ["one", "two", "three"] ),
+    Section(title: "Second", isExpanded: true, names: ["four", "five", "six", "what"] ),
+    Section(title: "Third", isExpanded: true, names: ["seven", "eight", "nine", "ten", "tweleve"]),
   ]
   
   var toLeft = true
@@ -36,8 +32,8 @@ class Home: UITableViewController {
   @objc func reloadAll(){
     var ip = [IndexPath]()
     
-    for section in names.indices {
-      for row in names[section].indices {
+    for section in sections.indices {
+      for row in sections[section].names.indices {
         ip.append(IndexPath(row: row, section: section))
       }
     }
@@ -51,7 +47,7 @@ class Home: UITableViewController {
   @objc func reloadSection(){
     var ip = [IndexPath]()
     
-    for i in names[0].indices {
+    for i in sections[0].names.indices {
       ip.append(IndexPath(row: i, section: 0))
     }
     
@@ -59,28 +55,49 @@ class Home: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    let l = UILabel()
-    l.backgroundColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
-    l.text = headerTitles[section]
-    return l
+    let b = UIButton(type: .system)
+    b.setTitle(sections[section].title, for: .normal)
+    b.setTitleColor(.black, for: .normal)
+    b.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
+    b.tag = section
+    b.addTarget(self, action: #selector(handleHeaderTap), for: .touchUpInside)
+    return b
+  }
+  
+  @objc func handleHeaderTap(b: UIButton){
+    let section = b.tag
+    
+    sections[section].isExpanded = !sections[section].isExpanded
+    
+    var ips = [IndexPath]()
+    for i in sections[section].names.indices {
+      ips.append(IndexPath(row: i, section: section))
+    }
+    
+    if sections[section].isExpanded {
+      tableView.insertRows(at: ips, with: .bottom)
+    }else {
+      tableView.deleteRows(at: ips, with: .top)
+    }
+
   }
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return names.count
+    return sections.count
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return names[section].count
+    return sections[section].isExpanded ? sections[section].names.count: 0
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: nCell, for: indexPath)
-    cell.textLabel?.text = names[indexPath.section][indexPath.row] + ( toLeft ? "   Something" : "" )
+    cell.textLabel?.text = sections[indexPath.section].names[indexPath.row]
     return cell
   }
   
   override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 35
+    return 36
   }
 
 }
