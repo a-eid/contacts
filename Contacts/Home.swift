@@ -12,6 +12,8 @@ class Home: UITableViewController {
   let headerTitles = [
     "first", "second", "third"
   ]
+  
+  var toLeft = true
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -19,6 +21,41 @@ class Home: UITableViewController {
     navigationController?.navigationBar.prefersLargeTitles = true
     tableView.alwaysBounceVertical = true
     tableView.register(UITableViewCell.self , forCellReuseIdentifier: nCell)
+    navigationItem.leftBarButtonItems = [
+      UIBarButtonItem(title: "r1", style: .plain, target: self, action: #selector(reloadOne)),
+      UIBarButtonItem(title: "rs", style: .plain, target: self, action: #selector(reloadSection)),
+      UIBarButtonItem(title: "rAll", style: .plain, target: self, action: #selector(reloadAll)),
+    ]
+  }
+  
+  @objc func reloadOne(){
+    let ip = IndexPath(row: 0, section: 0)
+    tableView.reloadRows(at: [ip], with: .left)
+  }
+  
+  @objc func reloadAll(){
+    var ip = [IndexPath]()
+    
+    for section in names.indices {
+      for row in names[section].indices {
+        ip.append(IndexPath(row: row, section: section))
+      }
+    }
+    
+    toLeft = !toLeft
+    let animation: UITableViewRowAnimation = toLeft ? .left : .right
+
+    tableView.reloadRows( at: ip, with: animation )
+  }
+  
+  @objc func reloadSection(){
+    var ip = [IndexPath]()
+    
+    for i in names[0].indices {
+      ip.append(IndexPath(row: i, section: 0))
+    }
+    
+    tableView.reloadRows(at: ip, with: .left)
   }
   
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -38,8 +75,12 @@ class Home: UITableViewController {
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: nCell, for: indexPath)
-    cell.textLabel?.text = names[indexPath.section][indexPath.row]
+    cell.textLabel?.text = names[indexPath.section][indexPath.row] + ( toLeft ? "   Something" : "" )
     return cell
+  }
+  
+  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 35
   }
 
 }
