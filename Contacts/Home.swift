@@ -3,6 +3,7 @@ import ios_essentials
 
 class Home: UITableViewController {
   let nCell = "nCell"
+  
   var sections: [Section] = [
     Section(title: "First", isExpanded: true, names: ["one", "two", "three"] ),
     Section(title: "Second", isExpanded: true, names: ["four", "five", "six", "what"] ),
@@ -13,10 +14,11 @@ class Home: UITableViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    tableView.allowsSelection = false
     navigationItem.title = "Contacts"
     navigationController?.navigationBar.prefersLargeTitles = true
     tableView.alwaysBounceVertical = true
-    tableView.register(UITableViewCell.self , forCellReuseIdentifier: nCell)
+    tableView.register(ContactCell.self , forCellReuseIdentifier: nCell)
     navigationItem.leftBarButtonItems = [
       UIBarButtonItem(title: "r1", style: .plain, target: self, action: #selector(reloadOne)),
       UIBarButtonItem(title: "rs", style: .plain, target: self, action: #selector(reloadSection)),
@@ -82,6 +84,11 @@ class Home: UITableViewController {
 
   }
   
+  func toggleFav(cell: UITableViewCell){
+    guard let indexPath = tableView.indexPath(for: cell) else { return }
+    print(indexPath.row)
+  }
+  
   override func numberOfSections(in tableView: UITableView) -> Int {
     return sections.count
   }
@@ -91,12 +98,18 @@ class Home: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: nCell, for: indexPath)
-    cell.textLabel?.text = sections[indexPath.section].names[indexPath.row]
+    let cell = tableView.dequeueReusableCell(withIdentifier: nCell, for: indexPath) as! ContactCell
+    let fav = drand48() > 0.5
+    cell.updateViews(label: sections[indexPath.section].names[indexPath.row], fav: fav)
+    cell.home = self
     return cell
   }
   
   override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 36
+  }
+  
+  override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     return 36
   }
 
