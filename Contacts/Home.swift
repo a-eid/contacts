@@ -3,16 +3,37 @@ import ios_essentials
 
 class Home: UITableViewController {
   let nCell = "nCell"
-  
   var sections: [Section] = [
-    Section(title: "First", isExpanded: true, names: ["one", "two", "three"] ),
-    Section(title: "Second", isExpanded: true, names: ["four", "five", "six", "what"] ),
-    Section(title: "Third", isExpanded: true, names: ["seven", "eight", "nine", "ten", "tweleve"]),
+    Section(title: "First", isExpanded: true, contacts: [
+      Contact(fav: false, name: "one"),
+      Contact(fav: false, name: "two"),
+      Contact(fav: false, name: "three"),
+      Contact(fav: false, name: "one"),
+      Contact(fav: false, name: "two"),
+      Contact(fav: false, name: "three"),
+    ]),
+    Section(title: "Second", isExpanded: true,contacts: [
+      Contact(fav: false, name: "four"),
+      Contact(fav: false, name: "five"),
+      Contact(fav: false, name: "six"),
+      Contact(fav: false, name: "four"),
+      Contact(fav: false, name: "five"),
+      Contact(fav: false, name: "six"),
+    ]),
+    Section(title: "Third", isExpanded: true, contacts: [
+      Contact(fav: false, name: "seven"),
+      Contact(fav: false, name: "eight"),
+      Contact(fav: false, name: "ten"),
+      Contact(fav: false, name: "seven"),
+      Contact(fav: false, name: "eight"),
+      Contact(fav: false, name: "ten")
+    ]),
   ]
   
   var toLeft = true
 
   override func viewDidLoad() {
+   
     super.viewDidLoad()
     tableView.allowsSelection = false
     navigationItem.title = "Contacts"
@@ -35,7 +56,7 @@ class Home: UITableViewController {
     var ip = [IndexPath]()
     
     for section in sections.indices {
-      for row in sections[section].names.indices {
+      for row in sections[section].contacts.indices {
         ip.append(IndexPath(row: row, section: section))
       }
     }
@@ -49,7 +70,7 @@ class Home: UITableViewController {
   @objc func reloadSection(){
     var ip = [IndexPath]()
     
-    for i in sections[0].names.indices {
+    for i in sections[0].contacts.indices {
       ip.append(IndexPath(row: i, section: 0))
     }
     
@@ -72,7 +93,7 @@ class Home: UITableViewController {
     sections[section].isExpanded = !sections[section].isExpanded
     
     var ips = [IndexPath]()
-    for i in sections[section].names.indices {
+    for i in sections[section].contacts.indices {
       ips.append(IndexPath(row: i, section: section))
     }
     
@@ -84,9 +105,11 @@ class Home: UITableViewController {
 
   }
   
-  func toggleFav(cell: UITableViewCell){
+  func toggleFav(cell: ContactCell){
     guard let indexPath = tableView.indexPath(for: cell) else { return }
-    print(indexPath.row)
+    sections[indexPath.section].contacts[indexPath.row].fav = !sections[indexPath.section].contacts[indexPath.row].fav
+    cell.updateViews(label: nil, fav: sections[indexPath.section].contacts[indexPath.row].fav )
+    tableView.reloadRows(at: [indexPath], with: .none)
   }
   
   override func numberOfSections(in tableView: UITableView) -> Int {
@@ -94,13 +117,13 @@ class Home: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return sections[section].isExpanded ? sections[section].names.count: 0
+    return sections[section].isExpanded ? sections[section].contacts.count: 0
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: nCell, for: indexPath) as! ContactCell
-    let fav = drand48() > 0.5
-    cell.updateViews(label: sections[indexPath.section].names[indexPath.row], fav: fav)
+    let contact = sections[indexPath.section].contacts[indexPath.row]
+    cell.updateViews(label: contact.name , fav: contact.fav)
     cell.home = self
     return cell
   }

@@ -12,7 +12,7 @@ class ContactCell: UITableViewCell {
   
   let starView: UIButton = {
     let b = UIButton(type: .system)
-    b.frame = CGRect(x: 0, y: 0, width: 50, height: 20)
+    b.frame = CGRect(x: 0, y: 0, width: 30, height: 20)
     
     b.setImage(#imageLiteral(resourceName: "star"), for: .normal)
     b.tintColor = .red
@@ -28,7 +28,7 @@ class ContactCell: UITableViewCell {
   
   func setupViews(){
     addSubview(label)
-    _ = label.anchorEdges(top: topAnchor, left: leftAnchor, right: nil, bottom: bottomAnchor)
+    _ = label.anchorEdges(top: topAnchor, tConst: 0, left: leftAnchor, lConst: 20, right: nil, rConst: 0, bottom: bottomAnchor, bConst: 0)
     _ = label.anchorWH(width: widthAnchor, wMultiplier: 0.7, height: nil, hMultiplier: 0)
     accessoryView = starView
     starView.addTarget(self, action: #selector(toggleFav), for: .touchUpInside)

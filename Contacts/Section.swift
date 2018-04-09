@@ -3,5 +3,10 @@ import Foundation
 struct Section {
   var title: String
   var isExpanded: Bool
-  var names: [String]
+  var contacts: [Contact]
+}
+
+struct Contact {
+  var fav: Bool
+  var name: String
 }
